@@ -3,7 +3,7 @@ import {Player} from "../src/player";
 
 export class Game extends Room {
     maxClients = 5;
-    players: Player[];
+    players: Player[] = [];
 
     state = {
         mainState: 'lobby',
@@ -34,7 +34,7 @@ export class Game extends Room {
             case 'avatarUpload':
                 this.state.faceImageList.push(data.data);
 
-                this.players[client.sessionId] = new Player(this.state.faceImageList.length);
+                this.players[client.sessionId] = new Player(this.state.faceImageList.length - 1);
                 break;
 
             case 'faceImagesUpload':
@@ -45,6 +45,7 @@ export class Game extends Room {
 
         }
 
+        console.log(this.players[client.sessionId]);
         console.log("BasicRoom received message from", client.sessionId, ":", data);
         this.broadcast(`(${ client.sessionId }) ${ data.message }`);
     }
