@@ -48,7 +48,7 @@ export class Game extends Room {
 
         console.log(this.players[client.sessionId]);
         console.log("BasicRoom received message from", client.sessionId, ":", data);
-        this.broadcast(`(${client.sessionId}) ${data.message}`);
+        this.broadcast(`(${client.sessionId}) ${data}`);
     }
 
     onDispose() {
