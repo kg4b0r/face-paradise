@@ -1,7 +1,7 @@
 const nanoid = require('nanoid');
 import {Room} from "colyseus";
 import {Player} from "../src/player";
-import {EventTypes, Message} from "../src/message";
+import {EventType, Message} from "../src/message";
 
 export class Game extends Room {
     maxClients = 5;
@@ -28,20 +28,20 @@ export class Game extends Room {
 
     onMessage(client, data: Message) {
         switch (data.event) {
-            case EventTypes.Start:
+            case EventType.Start:
                 break;
 
-            case EventTypes.AvatarUpload:
+            case EventType.AvatarUpload:
                 const avatarId = nanoid(8);
                 this.state.faceImageList[avatarId] = data.data;
 
                 this.players[client.sessionId] = new Player(avatarId);
                 break;
 
-            case EventTypes.FaceImagesUpload:
+            case EventType.FaceImagesUpload:
                 break;
 
-            case EventTypes.VoteUpload:
+            case EventType.VoteUpload:
                 break;
 
         }

@@ -1,4 +1,4 @@
-export enum EventTypes {
+export enum EventType {
     AvatarUpload = 'avatarUpload',
     Start = 'start',
     FaceImagesUpload = 'faceImagesUpload',
@@ -9,6 +9,6 @@ export enum EventTypes {
 }
 
 export class Message {
-    event: EventTypes;
+    event: EventType;
     data: any;
 }
