@@ -2,6 +2,7 @@ import { Room } from "colyseus";
 
 export class Game extends Room {
     maxClients = 5;
+    votes = 1;
 
     onInit (options) {
         this.setState({
@@ -39,7 +40,9 @@ export class Game extends Room {
 
         }
 
+        this.votes++;
         this.state = 'hello';
+        console.log(this.votes);
         console.log("BasicRoom received message from", client.sessionId, ":", data);
         this.broadcast(`(${ client.sessionId }) ${ data.message }`);
     }
