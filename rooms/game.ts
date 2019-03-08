@@ -1,5 +1,7 @@
-import { Room } from "colyseus";
+const nanoid = require('nanoid');
+import {Room} from "colyseus";
 import {Player} from "../src/player";
+import {EventTypes, Message} from "../src/message";
 
 export class Game extends Room {
     maxClients = 5;
@@ -9,48 +11,47 @@ export class Game extends Room {
         mainState: 'lobby',
         gameImageList: [],
         faceImageList: [],
-        voteRound : 0
+        voteRound: 0
     };
 
-    onInit (options) {
+    onInit(options) {
         this.setState(this.state);
     }
 
-    onJoin (client) {
-       // this.broadcast(`${ client.sessionId } joined.`);
+    onJoin(client) {
+        // this.broadcast(`${ client.sessionId } joined.`);
     }
 
-    onLeave (client) {
-       // this.broadcast(`${ client.sessionId } left.`);
+    onLeave(client) {
+        // this.broadcast(`${ client.sessionId } left.`);
     }
 
-    onMessage (client, data) {
-        // handle here: [start, avatarUpload, faceImagesUpload, voteUpload]
-
+    onMessage(client, data: Message) {
         switch (data.event) {
-            case 'start':
+            case EventTypes.Start:
                 break;
 
-            case 'avatarUpload':
-                this.state.faceImageList.push(data.data);
+            case EventTypes.AvatarUpload:
+                const avatarId = nanoid(8);
+                this.state.faceImageList[avatarId] = data.data;
 
-                this.players[client.sessionId] = new Player(this.state.faceImageList.length - 1);
+                this.players[client.sessionId] = new Player(avatarId);
                 break;
 
-            case 'faceImagesUpload':
+            case EventTypes.FaceImagesUpload:
                 break;
 
-            case 'voteUpload':
+            case EventTypes.VoteUpload:
                 break;
 
         }
 
         console.log(this.players[client.sessionId]);
         console.log("BasicRoom received message from", client.sessionId, ":", data);
-        this.broadcast(`(${ client.sessionId }) ${ data.message }`);
+        this.broadcast(`(${client.sessionId}) ${data.message}`);
     }
 
-    onDispose () {
+    onDispose() {
     }
 
 }
