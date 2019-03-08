@@ -10,6 +10,7 @@ import { ChatRoom } from "./rooms/01-chat-room";
 import { StateHandlerRoom } from "./rooms/02-state-handler";
 import { AuthRoom } from "./rooms/03-auth";
 import { CreateOrJoinRoom } from "./rooms/04-create-or-join-room";
+import { Game } from "./rooms/game";
 
 const port = Number(process.env.PORT || 2567);
 const app = express();
@@ -37,11 +38,14 @@ gameServer.register("auth", AuthRoom);
 // Register CreateOrJoin as "create_or_join"
 gameServer.register("create_or_join", CreateOrJoinRoom);
 
+// Actual FaceParadise
+gameServer.register("game", Game);
+
 app.use('/', express.static(path.join(__dirname, "static")));
 app.use('/', serveIndex(path.join(__dirname, "static"), {'icons': true}))
 
 // (optional) attach web monitoring panel
-app.use('/colyseus', monitor(gameServer));
+app.use('/admin', monitor(gameServer));
 
 gameServer.onShutdown(function(){
   console.log(`game server is going down.`);

@@ -31,7 +31,7 @@
       var host = window.document.location.host.replace(/:.*/, '');
 
       var client = new Colyseus.Client(location.protocol.replace("http", "ws") + host + (location.port ? ':'+location.port : ''));
-      var room = client.join("chat");
+      var room = client.join("game");
       room.onJoin.add(function () {
         console.log("joined");
       });
