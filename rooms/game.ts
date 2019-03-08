@@ -26,14 +26,14 @@ export class Game extends Room {
         // this.broadcast(`${ client.sessionId } left.`);
     }
 
-    onMessage(client, data: Message) {
-        switch (data.event) {
+    onMessage(client, message: Message) {
+        switch (message.event) {
             case EventType.Start:
                 break;
 
             case EventType.AvatarUpload:
                 const avatarId = nanoid(8);
-                this.state.faceImageList[avatarId] = data.data;
+                this.state.faceImageList[avatarId] = message.data;
 
                 this.players[client.sessionId] = new Player(avatarId);
                 break;
@@ -47,8 +47,8 @@ export class Game extends Room {
         }
 
         console.log(this.players[client.sessionId]);
-        console.log("BasicRoom received message from", client.sessionId, ":", data);
-        this.broadcast(`(${client.sessionId}) ${data}`);
+        console.log("BasicRoom received message from", client.sessionId, ":", message);
+        this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
 
     onDispose() {
