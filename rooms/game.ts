@@ -1,8 +1,9 @@
 import { Room } from "colyseus";
+import {Player} from "../src/player";
 
 export class Game extends Room {
     maxClients = 5;
-    votes = 1;
+    players: Player[];
 
     state = {
         mainState: 'lobby',
@@ -31,6 +32,9 @@ export class Game extends Room {
                 break;
 
             case 'avatarUpload':
+                this.state.faceImageList.push(data.data);
+
+                this.players[client.sessionId] = new Player(this.state.faceImageList.length);
                 break;
 
             case 'faceImagesUpload':
@@ -41,8 +45,6 @@ export class Game extends Room {
 
         }
 
-        this.votes++;
-        console.log(this.votes);
         console.log("BasicRoom received message from", client.sessionId, ":", data);
         this.broadcast(`(${ client.sessionId }) ${ data.message }`);
     }
