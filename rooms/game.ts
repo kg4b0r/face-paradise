@@ -196,6 +196,9 @@ export class Game extends Room {
                     'isLast': isLast
                 }));
             }
+            else {
+                game.nextVoteIntervalDelayed.clear();
+            }
         },
             3000,
             this
@@ -204,6 +207,7 @@ export class Game extends Room {
 
 
     sendResult() {
+        this.state.mainState = StateType.Result;
         this.nextVoteIntervalDelayed.clear();
 
         const result = Object.keys(this.state.players)
