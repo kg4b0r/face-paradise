@@ -59,10 +59,8 @@ export class Game extends Room {
     };
 
     onInit(options) {
-        this.setMetadata(moniker.choose());
         this.sourceGameImageList = images;
-
-        //this.roomId = moniker.choose();
+        this.setMetadata(moniker.choose());
         this.setState(this.state);
     }
 
