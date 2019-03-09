@@ -107,7 +107,6 @@ export class Game extends Room {
                 let ready = true;
 
                 Object.keys(this.players).forEach(function(key) {
-                    console.log(this.players[key]);
                     if (Object.keys(this.players[key].gameList).length == 0) {
                         ready = false;
                     }
@@ -141,6 +140,15 @@ export class Game extends Room {
     {
         console.log('VOTE!!!');
         //console.log(state);
+    }
+
+    sendResult() {
+        this.state.mainState = StateType.Result;
+        const result = Object.keys(this.players)
+            .map(c => ({ faceImageId: this.players[c].faceImageId, score: this.players[c].score}))
+            .sort((a, b) => a.score - b.score);
+
+        this.broadcast(new Message(EventType.Result, result));
     }
 
     onDispose() {
