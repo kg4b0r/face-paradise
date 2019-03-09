@@ -1,6 +1,6 @@
 const nanoid = require('nanoid');
 const moniker = require('moniker');
-import {Client, Room} from "colyseus";
+import {Client, Room, Delayed} from "colyseus";
 import {Player} from "../src/player";
 import {EventType, Message} from "../src/message";
 import {StateType} from "../src/state";
@@ -44,12 +44,14 @@ export class Game extends Room {
     voteConfig      = {};
     validVoteConfig = {};
 
+    nextVoteIntervalDelayed : Delayed;
+
     state = {
         playerCount: 0,
         mainState: StateType.Lobby,
         gameImageList: {},
         faceImageList: {},
-        voteRound: -1,
+        voteRound: 0,
         hostSessionId: '',
         maxVoteRound: 0,
         voteConfig : {}
@@ -77,7 +79,7 @@ export class Game extends Room {
     onMessage(client, message: Message) {
         switch (message.event) {
             case EventType.Start:
-                if (this.players.length < this.minPlayers)
+                if (Object.keys(this.players).length < this.minPlayers)
                 {
                     this.send(client, new Message(EventType.InvalidStart, "Not enough player!!!"));
                 }
@@ -87,6 +89,10 @@ export class Game extends Room {
                     this.state.mainState = StateType.Game;
                     let gameImageKeys = Array.from(this.sourceGameImageList.keys());
                     gameImageKeys = shuffle(gameImageKeys);
+                    gameImageKeys = gameImageKeys.slice(0, Object.keys(this.players).length * 5);
+                    gameImageKeys.forEach(function (gameImageId) {
+                        this.state.gameImageList[gameImageId] = this.sourceGameImageList[gameImageId];
+                    }, this);
                     this.clients.forEach(function (playerClient: Client) {
                         this.send(playerClient, new Message(EventType.GameConfig, gameImageKeys.splice(0,5)));
                     }, this);
@@ -171,14 +177,27 @@ export class Game extends Room {
 
         console.log(this.validVoteConfig);
 
-        this.state.voteRound = 1;
-        this.state.maxVoteRound = Object.keys(this.voteConfig).length;
+        this.state.voteRound = 0;
+        this.state.maxVoteRound = Object.keys(this.voteConfig).length - 1;
         this.state.voteConfig = this.voteConfig;
 
-        this.broadcast(new Message(EventType.NextVote,""));
+        this.broadcast(new Message(EventType.NextVote, this.state.voteRound));
+
+        this.nextVoteIntervalDelayed = this.clock.setInterval(function (game : Game) {
+            if (game.state.voteRound < game.state.maxVoteRound)
+            {
+                game.state.voteRound++;
+                game.broadcast(new Message(EventType.NextVote, game.state.voteRound));
+            }
+        },
+            3000,
+            this
+        )
     }
 
+
     sendResult() {
+        this.nextVoteIntervalDelayed.clear();
         this.state.mainState = StateType.Result;
         const result = Object.keys(this.players)
             .map(c => ({ faceImageId: this.players[c].faceImageId, score: this.players[c].score}))
