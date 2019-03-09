@@ -49,6 +49,7 @@
       // listen to patches coming from the server
       room.onMessage.add(function(message) {
         var p = document.createElement("p");
+        console.log(message);
         p.innerHTML = message;
         document.querySelector("#messages").appendChild(p);
       });
