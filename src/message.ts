@@ -4,6 +4,7 @@ export enum EventType {
     FaceImagesUpload = 'faceImagesUpload',
     VoteUpload = 'voteUpload',
 
+    DisplayStart = 'displayStart',
     InvalidStart = 'invalidStart',
     GameConfig = 'gameConfig',
     NextVote = 'nextVote',

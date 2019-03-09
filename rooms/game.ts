@@ -1,10 +1,10 @@
 const nanoid = require('nanoid');
 const moniker = require('moniker');
-import {Client, Room} from "colyseus";
+import {Client, Delayed, Room} from "colyseus";
 import {Player} from "../src/player";
 import {EventType, Message} from "../src/message";
 import {StateType} from "../src/state";
-import * as images from '../images.json'
+import * as images from '../images.json';
 
 export class Game extends Room {
     minPlayers = 0;
@@ -54,7 +54,6 @@ export class Game extends Room {
         gameImageList: {},
         faceImageList: {},
         voteRound: 0,
-        hostSessionId: '',
         maxVoteRound: 0,
         voteConfig : {}
     };
@@ -109,7 +108,10 @@ export class Game extends Room {
                 const avatarId = nanoid(8);
                 this.state.faceImageList[avatarId] = message.data;
 
-                this.state.hostSessionId = client.sessionId;
+                if (Object.keys(this.players).length < 1)
+                {
+                    this.send(client, new Message(EventType.DisplayStart, ''));
+                }
 
                 this.players[client.sessionId] = new Player(avatarId);
 
