@@ -62,13 +62,11 @@ export class Game extends Room {
     onInit(options) {
         this.sourceGameImageList = images;
 
-        this.roomId = moniker.choose();
+        //this.roomId = moniker.choose();
         this.setState(this.state);
     }
 
     requestJoin (options, isNewRoom: boolean) {
-        console.log(options);
-        console.log(isNewRoom);
         return (options.create)
             ? (options.create && isNewRoom)
             : this.clients.length > 0;
