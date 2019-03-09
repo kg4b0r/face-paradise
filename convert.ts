@@ -1,6 +1,6 @@
 let base64Img = require('base64-img');
 let fs = require('fs');
-
+let compress = require('compress-images');
 
 
 fs.readdir('images/', function(err, items) {
