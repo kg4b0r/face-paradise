@@ -9,7 +9,6 @@ import * as images from '../images.json';
 export class Game extends Room {
     minPlayers = 0;
     maxClients = 5;
-    players: Player[] = [];
     points: 500;
 
     sourceGameImageList = [
@@ -55,7 +54,8 @@ export class Game extends Room {
         faceImageList: {},
         voteRound: 0,
         maxVoteRound: 0,
-        voteConfig : {}
+        voteConfig : {},
+        players: {}
     };
 
     onInit(options) {
@@ -82,7 +82,7 @@ export class Game extends Room {
     onMessage(client, message: Message) {
         switch (message.event) {
             case EventType.Start:
-                if (Object.keys(this.players).length < this.minPlayers)
+                if (Object.keys(this.state.players).length < this.minPlayers)
                 {
                     this.send(client, new Message(EventType.InvalidStart, "Not enough player!!!"));
                 }
@@ -92,7 +92,7 @@ export class Game extends Room {
                     this.state.mainState = StateType.Game;
                     let gameImageKeys = Array.from(this.sourceGameImageList.keys());
                     gameImageKeys = shuffle(gameImageKeys);
-                    gameImageKeys = gameImageKeys.slice(0, Object.keys(this.players).length * 5);
+                    gameImageKeys = gameImageKeys.slice(0, Object.keys(this.state.players).length * 5);
                     gameImageKeys.forEach(function (gameImageId) {
                         this.state.gameImageList[gameImageId] = this.sourceGameImageList[gameImageId];
                     }, this);
@@ -106,12 +106,12 @@ export class Game extends Room {
                 const avatarId = nanoid(8);
                 this.state.faceImageList[avatarId] = message.data;
 
-                if (Object.keys(this.players).length < 1)
+                if (Object.keys(this.state.players).length < 1)
                 {
                     this.send(client, new Message(EventType.DisplayStart, ''));
                 }
 
-                this.players[client.sessionId] = new Player(avatarId);
+                this.state.players[client.sessionId] = new Player(avatarId);
 
                 break;
 
@@ -121,13 +121,13 @@ export class Game extends Room {
 
                     this.state.faceImageList[imageId] = item.faceImage;
 
-                    this.players[client.sessionId].addGame(item.gameImageId, imageId);
+                    this.state.players[client.sessionId].addGame(item.gameImageId, imageId);
                 }, this);
 
                 let ready = true;
 
-                Object.keys(this.players).forEach(function(key) {
-                    if (Object.keys(this.players[key].gameList).length == 0) {
+                Object.keys(this.state.players).forEach(function(key) {
+                    if (Object.keys(this.state.players[key].gameList).length == 0) {
                         ready = false;
                     }
                 }, this);
@@ -141,9 +141,9 @@ export class Game extends Room {
             case EventType.VoteUpload:
                 message.data.forEach(function (item) {
                     if (this.validVoteConfig[item.gameImageId] == item.faceImageId) {
-                        if(!this.players[client.sessionId].gameList.hasOwnProperty(item.gameImageId))
+                        if(!this.state.players[client.sessionId].gameList.hasOwnProperty(item.gameImageId))
                         {
-                            this.players[client.sessionId].score += this.points;
+                            this.state.players[client.sessionId].score += this.points;
                         }
                     }
                 }, this);
@@ -151,7 +151,7 @@ export class Game extends Room {
 
         }
 
-       // console.log(this.players[client.sessionId]);
+       // console.log(this.state.players[client.sessionId]);
 //        console.log("BasicRoom received message from", client.sessionId, ":", message);
         this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
@@ -161,12 +161,12 @@ export class Game extends Room {
         this.state.mainState = StateType.Vote;
         console.log('VOTE!!!');
 
-        Object.keys(this.players).forEach(function(key) {
-            let randomPlayerVoteKeys = Object.keys(this.players[key].gameList);
+        Object.keys(this.state.players).forEach(function(key) {
+            let randomPlayerVoteKeys = Object.keys(this.state.players[key].gameList);
             randomPlayerVoteKeys = shuffle(randomPlayerVoteKeys);
             randomPlayerVoteKeys = randomPlayerVoteKeys.slice(0, 2);
             randomPlayerVoteKeys.forEach(function (gameImageId) {
-                this.validVoteConfig[gameImageId] = this.players[key].gameList[gameImageId];
+                this.validVoteConfig[gameImageId] = this.state.players[key].gameList[gameImageId];
             }, this);
         }, this);
 
@@ -213,8 +213,8 @@ export class Game extends Room {
     sendResult() {
         this.nextVoteIntervalDelayed.clear();
         this.state.mainState = StateType.Result;
-        const result = Object.keys(this.players)
-            .map(c => ({ faceImageId: this.players[c].faceImageId, score: this.players[c].score}))
+        const result = Object.keys(this.state.players)
+            .map(c => ({ faceImageId: this.state.players[c].faceImageId, score: this.state.players[c].score}))
             .sort((a, b) => a.score - b.score);
 
         this.broadcast(new Message(EventType.Result, result));
