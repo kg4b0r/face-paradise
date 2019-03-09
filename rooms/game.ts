@@ -41,6 +41,7 @@ export class Game extends Room {
         'base_64_image_29',
     ];
 
+    voteConfigIndexes     = [];
     voteConfig      = {};
     validVoteConfig = {};
 
@@ -169,21 +170,29 @@ export class Game extends Room {
             faceIdKeys.push(validFaceId);
             faceIdKeys = shuffle(faceIdKeys);
             this.voteConfig[gameImageId] = faceIdKeys;
+            this.voteConfigIndexes.push(gameImageId);
         }, this);
 
         console.log(this.validVoteConfig);
 
         this.state.voteRound = 0;
-        this.state.maxVoteRound = Object.keys(this.voteConfig).length - 1;
+        this.state.maxVoteRound = Object.keys(this.voteConfig).length-1;
         this.state.voteConfig = this.voteConfig;
 
-        this.broadcast(new Message(EventType.NextVote, this.state.voteRound));
+        this.broadcast(new Message(EventType.NextVote, {
+            'gameImageId': this.voteConfigIndexes[this.state.voteRound],
+            'isLast': false
+        }));
 
         this.nextVoteIntervalDelayed = this.clock.setInterval(function (game : Game) {
-            if (game.state.voteRound < game.state.maxVoteRound)
+            game.state.voteRound++;
+            if (game.state.voteRound <= game.state.maxVoteRound)
             {
-                game.state.voteRound++;
-                game.broadcast(new Message(EventType.NextVote, game.state.voteRound));
+                let isLast = game.state.voteRound == game.state.maxVoteRound;
+                game.broadcast(new Message(EventType.NextVote, {
+                    'gameImageId': game.voteConfigIndexes[game.state.voteRound],
+                    'isLast': isLast
+                }));
             }
         },
             3000,
