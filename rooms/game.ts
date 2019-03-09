@@ -38,8 +38,6 @@ export class Game extends Room {
 
                 this.players[client.sessionId] = new Player(avatarId);
 
-               //TODO: this.clock.setTimeout(this.startVote, 10000, this.state);
-                this.state.mainState = 'hello';
                 break;
 
             case EventType.FaceImagesUpload:
@@ -50,6 +48,20 @@ export class Game extends Room {
 
                     this.players[client.sessionId].addGame(item.gameImageId, imageId);
                 }, this);
+
+                let ready = true;
+
+                Object.keys(this.players).forEach(function(key) {
+                    console.log(this.players[key]);
+                    if (Object.keys(this.players[key].gameList).length == 0) {
+                        ready = false;
+                    }
+                }, this);
+
+                if(ready)
+                {
+                    this.startVote(this.state);
+                }
                 break;
 
             case EventType.VoteUpload:
@@ -57,15 +69,15 @@ export class Game extends Room {
 
         }
 
-        console.log(this.players[client.sessionId]);
+       // console.log(this.players[client.sessionId]);
 //        console.log("BasicRoom received message from", client.sessionId, ":", message);
         this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
 
     startVote(state)
     {
-        console.log('vote: ');
-        console.log(state);
+        console.log('VOTE!!!');
+        //console.log(state);
     }
 
     onDispose() {
