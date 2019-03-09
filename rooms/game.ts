@@ -95,7 +95,8 @@ export class Game extends Room {
 
             case EventType.FaceImagesUpload:
                 message.data.forEach(function (item) {
-                    if (typeof item.gameImageId !== 'undefined' && typeof item.faceImage !== 'undefined') {
+                    if (typeof item.gameImageId !== 'undefined' && typeof item.faceImage !== 'undefined'
+                     && item.gameImageId !== null && item.faceImage !== null) {
                         const imageId = nanoid(8);
 
                         this.state.faceImageList[imageId] = item.faceImage;
