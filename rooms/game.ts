@@ -1,4 +1,5 @@
 const nanoid = require('nanoid');
+const moniker = require('moniker');
 import {Client, Room} from "colyseus";
 import {Player} from "../src/player";
 import {EventType, Message} from "../src/message";
@@ -54,6 +55,7 @@ export class Game extends Room {
     };
 
     onInit(options) {
+        this.roomId = moniker.choose();
         this.setState(this.state);
     }
 
