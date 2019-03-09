@@ -1,9 +1,10 @@
 const nanoid = require('nanoid');
 const moniker = require('moniker');
-import {Client, Room, Delayed} from "colyseus";
+import {Client, Room} from "colyseus";
 import {Player} from "../src/player";
 import {EventType, Message} from "../src/message";
 import {StateType} from "../src/state";
+import * as images from '../images.json'
 
 export class Game extends Room {
     minPlayers = 0;
@@ -58,6 +59,8 @@ export class Game extends Room {
     };
 
     onInit(options) {
+        this.sourceGameImageList = images;
+
         this.roomId = moniker.choose();
         this.setState(this.state);
     }
