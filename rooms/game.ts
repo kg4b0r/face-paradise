@@ -138,8 +138,9 @@ export class Game extends Room {
                     }
                 }, this);
 
-                if(ready)
+                if(ready && this.state.mainState == StateType.Game)
                 {
+                    this.state.mainState = StateType.Vote;
                     this.startVote();
                 }
                 break;
