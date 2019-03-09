@@ -195,9 +195,7 @@ export class Game extends Room {
                     'gameImageId': game.voteConfigIndexes[game.state.voteRound],
                     'isLast': isLast
                 }));
-            }
-            else {
-                game.nextVoteIntervalDelayed.clear();
+                if (isLast) game.nextVoteIntervalDelayed.clear();
             }
         },
             3000,
@@ -208,7 +206,6 @@ export class Game extends Room {
 
     sendResult() {
         this.state.mainState = StateType.Result;
-        this.nextVoteIntervalDelayed.clear();
 
         const result = Object.keys(this.state.players)
             .map(c => ({ faceImageId: this.state.players[c].faceImageId, score: this.state.players[c].score}))
