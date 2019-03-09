@@ -76,6 +76,8 @@ export class Game extends Room {
 
     onLeave(client)
     {
+        this.broadcast('left player: ' + client.sessionId);
+        console.log(client.sessionId);
         this.state.playerCount--;
         delete this.state.players[client.sessionId];
     }
