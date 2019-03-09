@@ -8,6 +8,7 @@ export class Game extends Room {
     minPlayers = 0;
     maxClients = 5;
     players: Player[] = [];
+    points: 500;
 
     sourceGameImageList = [
         'base_64_image_1',
@@ -119,6 +120,14 @@ export class Game extends Room {
                 break;
 
             case EventType.VoteUpload:
+                message.data.forEach(function (item) {
+                    if (this.validVoteConfig[item.gameImageId] == item.faceImageId) {
+                        if(!this.players[client.sessionId].gameList.hasOwnProperty(item.gameImageId))
+                        {
+                            this.players[client.sessionId].score += this.points;
+                        }
+                    }
+                }, this);
                 break;
 
         }
