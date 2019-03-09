@@ -49,7 +49,8 @@ export class Game extends Room {
         gameImageList: [],
         faceImageList: [],
         voteRound: 0,
-        hostSessionId: ''
+        hostSessionId: '',
+        maxVoteRound: 0
     };
 
     onInit(options) {
@@ -114,7 +115,7 @@ export class Game extends Room {
 
                 if(ready)
                 {
-                    this.startVote(this.state);
+                    this.startVote();
                 }
                 break;
 
@@ -136,10 +137,39 @@ export class Game extends Room {
         this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
 
-    startVote(state)
+    startVote()
     {
+        this.state.mainState = StateType.Vote;
         console.log('VOTE!!!');
-        //console.log(state);
+
+        Object.keys(this.players).forEach(function(key) {
+            console.log(key);
+            let randomPlayerVotes = this.players[key].gameList;
+            console.log(randomPlayerVotes);
+            randomPlayerVotes = shuffle(randomPlayerVotes);
+            console.log(randomPlayerVotes);
+            randomPlayerVotes = randomPlayerVotes.slice(0,1);
+            console.log(randomPlayerVotes);
+            this.validVoteConfig = this.validVoteConfig.concat(randomPlayerVotes);
+            console.log(this.validVoteConfig);
+        }, this);
+
+        Object.keys(this.validVoteConfig).forEach(function (gameImageId) {
+            console.log(gameImageId);
+            let validFaceId = this.validVoteConfig[gameImageId];
+            let faceIdKeys = Object.keys(this.state.faceImageList);
+            faceIdKeys = faceIdKeys.filter(item => item == validFaceId);
+            faceIdKeys = shuffle(faceIdKeys);
+            faceIdKeys = faceIdKeys.slice(0, 3);
+            faceIdKeys.push(validFaceId);
+            faceIdKeys = shuffle(faceIdKeys);
+            this.voteConfig = this.voteConfig.concat(faceIdKeys);
+        }, this);
+
+        this.state.voteRound = 1;
+        this.state.maxVoteRound = this.voteConfig.length;
+
+        this.broadcast(new Message(EventType.NextVote,""));
     }
 
     sendResult() {

@@ -6,7 +6,7 @@ export enum EventType {
 
     InvalidStart = 'invalidStart',
     GameConfig = 'gameConfig',
-    VoteConfig = 'voteConfig',
+    NextVote = 'nextVote',
     Result = 'result'
 }
 
