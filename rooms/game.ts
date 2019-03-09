@@ -9,8 +9,8 @@ export class Game extends Room {
 
     state = {
         mainState: 'lobby',
-        gameImageList: [],
-        faceImageList: [],
+        gameImageList: {},
+        faceImageList: {},
         voteRound: 0
     };
 
@@ -39,6 +39,13 @@ export class Game extends Room {
                 break;
 
             case EventType.FaceImagesUpload:
+                message.data.forEach(function (item) {
+                    const imageId = nanoid(8);
+
+                    this.state.faceImageList[imageId] = item.faceImage;
+
+                    this.players[client.sessionId].addGame(item.gameImageId, imageId);
+                }, this);
                 break;
 
             case EventType.VoteUpload:
@@ -47,7 +54,7 @@ export class Game extends Room {
         }
 
         console.log(this.players[client.sessionId]);
-        console.log("BasicRoom received message from", client.sessionId, ":", message);
+//        console.log("BasicRoom received message from", client.sessionId, ":", message);
         this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
 
