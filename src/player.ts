@@ -3,6 +3,7 @@ export class Player {
     score: number = 0;
     gameList: string[] = [];
     voteList: string[] = [];
+    isVoted = false;
 
     constructor(avatarId: number) {
         this.avatarId = avatarId;
