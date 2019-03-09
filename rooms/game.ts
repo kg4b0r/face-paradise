@@ -123,11 +123,13 @@ export class Game extends Room {
 
             case EventType.FaceImagesUpload:
                 message.data.forEach(function (item) {
-                    const imageId = nanoid(8);
+                    if (typeof item.gameImageId !== 'undefined' && typeof item.faceImage !== 'undefined') {
+                        const imageId = nanoid(8);
 
-                    this.state.faceImageList[imageId] = item.faceImage;
+                        this.state.faceImageList[imageId] = item.faceImage;
 
-                    this.state.players[client.sessionId].addGame(item.gameImageId, imageId);
+                        this.state.players[client.sessionId].addGame(item.gameImageId, imageId);
+                    }
                 }, this);
 
                 let ready = true;
@@ -165,8 +167,9 @@ export class Game extends Room {
                     }
                 }, this);
 
-                if (isEveryOneVoted)
+                if (isEveryOneVoted && this.state.mainState == StateType.Vote)
                 {
+                    this.state.mainState = StateType.Result;
                     this.sendResult();
                 }
 
@@ -234,7 +237,7 @@ export class Game extends Room {
 
     sendResult() {
         this.nextVoteIntervalDelayed.clear();
-        this.state.mainState = StateType.Result;
+
         const result = Object.keys(this.state.players)
             .map(c => ({ faceImageId: this.state.players[c].faceImageId, score: this.state.players[c].score}))
             .sort((a, b) => a.score - b.score);
