@@ -39,6 +39,9 @@ export class Game extends Room {
         'base_64_image_29',
     ];
 
+    voteConfig      = [];
+    validVoteConfig = [];
+
     state = {
         playerCount: 0,
         mainState: StateType.Lobby,
