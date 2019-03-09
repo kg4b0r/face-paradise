@@ -67,6 +67,8 @@ export class Game extends Room {
     }
 
     requestJoin (options, isNewRoom: boolean) {
+        console.log(options);
+        console.log(isNewRoom);
         return (options.create)
             ? (options.create && isNewRoom)
             : this.clients.length > 0;
