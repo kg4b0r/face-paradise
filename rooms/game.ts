@@ -73,10 +73,10 @@ export class Game extends Room {
     onMessage(client, message: Message) {
         switch (message.event) {
             case EventType.Start:
-                console.log(this.players.length);
+                console.log(Object.keys(this.players).length);
                 console.log(this.minPlayers);
 
-                if (this.players.length < this.minPlayers)
+                if (Object.keys(this.players).length < this.minPlayers)
                 {
                     this.send(client, new Message(EventType.InvalidStart, "Not enough player!!!"));
                 }
@@ -85,6 +85,10 @@ export class Game extends Room {
                     this.state.mainState = StateType.Game;
                     let gameImageKeys = Array.from(this.sourceGameImageList.keys());
                     gameImageKeys = shuffle(gameImageKeys);
+                    gameImageKeys = gameImageKeys.slice(0, Object.keys(this.players).length * 5);
+                    gameImageKeys.forEach(function (gameImageId) {
+                        this.state.gameImageList[gameImageId] = this.sourceGameImageList[gameImageId];
+                    }, this);
                     this.clients.forEach(function (playerClient: Client) {
                         this.send(playerClient, new Message(EventType.GameConfig, gameImageKeys.splice(0,5)));
                     }, this);
