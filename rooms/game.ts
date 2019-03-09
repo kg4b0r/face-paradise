@@ -9,6 +9,7 @@ export class Game extends Room {
 
     state = {
         mainState: 'lobby',
+        playerCount: 0,
         gameImageList: {},
         faceImageList: {},
         voteRound: 0
@@ -19,7 +20,7 @@ export class Game extends Room {
     }
 
     onJoin(client) {
-        // this.broadcast(`${ client.sessionId } joined.`);
+        this.state.playerCount++;
     }
 
     onLeave(client) {
@@ -36,6 +37,9 @@ export class Game extends Room {
                 this.state.faceImageList[avatarId] = message.data;
 
                 this.players[client.sessionId] = new Player(avatarId);
+
+               //TODO: this.clock.setTimeout(this.startVote, 10000, this.state);
+                this.state.mainState = 'hello';
                 break;
 
             case EventType.FaceImagesUpload:
@@ -56,6 +60,12 @@ export class Game extends Room {
         console.log(this.players[client.sessionId]);
 //        console.log("BasicRoom received message from", client.sessionId, ":", message);
         this.broadcast(`(${client.sessionId}) ${message.event}`);
+    }
+
+    startVote(state)
+    {
+        console.log('vote: ');
+        console.log(state);
     }
 
     onDispose() {
