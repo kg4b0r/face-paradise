@@ -1,8 +1,8 @@
 export class Player {
     avatarId: number;
     score: number = 0;
-    gameList: string[] = [];
-    voteList: string[] = [];
+    gameList = {};
+    voteList = {};
     isVoted = false;
 
     constructor(avatarId: number) {

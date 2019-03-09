@@ -11,35 +11,7 @@ export class Game extends Room {
     maxClients = 5;
     points: 500;
 
-    sourceGameImageList = [
-        'base_64_image_1',
-        'base_64_image_2',
-        'base_64_image_3',
-        'base_64_image_4',
-        'base_64_image_5',
-        'base_64_image_6',
-        'base_64_image_7',
-        'base_64_image_8',
-        'base_64_image_9',
-        'base_64_image_11',
-        'base_64_image_12',
-        'base_64_image_13',
-        'base_64_image_14',
-        'base_64_image_15',
-        'base_64_image_16',
-        'base_64_image_17',
-        'base_64_image_18',
-        'base_64_image_19',
-        'base_64_image_21',
-        'base_64_image_22',
-        'base_64_image_23',
-        'base_64_image_24',
-        'base_64_image_25',
-        'base_64_image_26',
-        'base_64_image_27',
-        'base_64_image_28',
-        'base_64_image_29',
-    ];
+    sourceGameImageList = [];
 
     voteConfigIndexes     = [];
     voteConfig      = {};
@@ -169,16 +141,11 @@ export class Game extends Room {
 
                 break;
         }
-
-       // console.log(this.state.players[client.sessionId]);
-//        console.log("BasicRoom received message from", client.sessionId, ":", message);
-        this.broadcast(`(${client.sessionId}) ${message.event}`);
     }
 
     startVote()
     {
         this.state.mainState = StateType.Vote;
-        console.log('VOTE!!!');
 
         Object.keys(this.state.players).forEach(function(key) {
             let randomPlayerVoteKeys = Object.keys(this.state.players[key].gameList);
