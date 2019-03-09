@@ -198,7 +198,7 @@ export class Game extends Room {
                 if (isLast) game.nextVoteIntervalDelayed.clear();
             }
         },
-            3000,
+            6000,
             this
         )
     }
