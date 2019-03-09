@@ -97,7 +97,10 @@ export class Game extends Room {
                         this.state.gameImageList[gameImageId] = this.sourceGameImageList[gameImageId];
                     }, this);
                     this.clients.forEach(function (playerClient: Client) {
-                        this.send(playerClient, new Message(EventType.GameConfig, gameImageKeys.splice(0,5)));
+                        if (typeof this.state.players[playerClient.sessionId] !== 'undefined')
+                        {
+                            this.send(playerClient, new Message(EventType.GameConfig, gameImageKeys.splice(0,5)));
+                        }
                     }, this);
                 }
                 break;
@@ -147,8 +150,23 @@ export class Game extends Room {
                         }
                     }
                 }, this);
-                break;
 
+                this.state.players[client.sessionId].isVoted = true;
+
+                let isEveryOneVoted = true;
+
+                Object.keys(this.state.players).forEach(function(key) {
+                    if (this.state.players[key].isVoted == false) {
+                        isEveryOneVoted = false;
+                    }
+                }, this);
+
+                if (isEveryOneVoted)
+                {
+                    this.sendResult();
+                }
+
+                break;
         }
 
        // console.log(this.state.players[client.sessionId]);
